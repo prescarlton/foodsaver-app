@@ -10,16 +10,19 @@ import {
   NavigationContainer,
   NavigatorScreenParams, // @demo remove-current-line
 } from "@react-navigation/native"
-import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { observer } from "mobx-react-lite"
 import React from "react"
-import { useColorScheme } from "react-native"
+import { TextStyle, ViewStyle, useColorScheme } from "react-native"
 import * as Screens from "app/screens"
 import Config from "../config"
-import { useStores } from "../models" // @demo remove-current-line
-import { DemoNavigator, DemoTabParamList } from "./DemoNavigator" // @demo remove-current-line
+import { DemoTabParamList } from "./DemoNavigator" // @demo remove-current-line
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
-import { colors } from "app/theme"
+import { colors, spacing, typography } from "app/theme"
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { translate } from "../i18n"
+import { Icon } from "app/components"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -35,11 +38,11 @@ import { colors } from "app/theme"
  *   https://reactnavigation.org/docs/typescript/#organizing-types
  */
 export type AppStackParamList = {
-  Welcome: undefined
-  Login: undefined // @demo remove-current-line
-  Demo: NavigatorScreenParams<DemoTabParamList> // @demo remove-current-line
-  // 🔥 Your screens go here
-  // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
+  Home: undefined
+  Login: undefined
+  Demo: NavigatorScreenParams<DemoTabParamList>
+  Camera: undefined
+  DemoShowroom: undefined
 }
 
 /**
@@ -54,45 +57,12 @@ export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStack
 >
 
 // Documentation: https://reactnavigation.org/docs/stack-navigator/
-const Stack = createNativeStackNavigator<AppStackParamList>()
+// const Stack = createNativeStackNavigator<AppStackParamList>()
+const Tab = createBottomTabNavigator<AppStackParamList>()
 
-const AppStack = observer(function AppStack() {
-  // @demo remove-block-start
-  const {
-    authenticationStore: { isAuthenticated },
-  } = useStores()
-
-  // @demo remove-block-end
-  return (
-    <Stack.Navigator
-      screenOptions={{ headerShown: false, navigationBarColor: colors.background }}
-      initialRouteName={isAuthenticated ? "Welcome" : "Login"} // @demo remove-current-line
-    >
-      {/* @demo remove-block-start */}
-      {isAuthenticated ? (
-        <>
-          {/* @demo remove-block-end */}
-          <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
-          {/* @demo remove-block-start */}
-          <Stack.Screen name="Demo" component={DemoNavigator} />
-        </>
-      ) : (
-        <>
-          <Stack.Screen name="Login" component={Screens.LoginScreen} />
-        </>
-      )}
-      {/* @demo remove-block-end */}
-      {/** 🔥 Your screens go here */}
-      {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
-    </Stack.Navigator>
-  )
-})
-
-export interface NavigationProps
-  extends Partial<React.ComponentProps<typeof NavigationContainer>> {}
-
-export const AppNavigator = observer(function AppNavigator(props: NavigationProps) {
+const AppNavigator = observer(function AppStack() {
   const colorScheme = useColorScheme()
+  const { bottom } = useSafeAreaInsets()
 
   useBackButtonHandler((routeName) => exitRoutes.includes(routeName))
 
@@ -100,9 +70,74 @@ export const AppNavigator = observer(function AppNavigator(props: NavigationProp
     <NavigationContainer
       ref={navigationRef}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-      {...props}
     >
-      <AppStack />
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarHideOnKeyboard: true,
+          tabBarStyle: [$tabBar, { height: bottom + 70 }],
+          tabBarActiveTintColor: colors.text,
+          tabBarInactiveTintColor: colors.text,
+          tabBarLabelStyle: $tabBarLabel,
+          tabBarItemStyle: $tabBarItem,
+        }}
+        // initialRouteName={isAuthenticated ? "Home" : "Login"}
+        initialRouteName="Home"
+      >
+        <Tab.Screen
+          name="Home"
+          component={Screens.WelcomeScreen}
+          options={{
+            tabBarLabel: translate("tabNavigator.homeTab"),
+            tabBarIcon: ({ focused }) => (
+              <Icon icon="heart" color={focused && colors.tint} size={30} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Camera"
+          component={Screens.CameraScreen}
+          options={{
+            tabBarLabel: translate("tabNavigator.cameraTab"),
+            tabBarIcon: ({ focused }) => (
+              <Icon icon="camera" color={focused && colors.tint} size={30} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="DemoShowroom"
+          component={Screens.DemoShowroomScreen}
+          options={{
+            tabBarLabel: translate("demoNavigator.componentsTab"),
+            tabBarIcon: ({ focused }) => (
+              <Icon icon="components" color={focused && colors.tint} size={30} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
     </NavigationContainer>
   )
 })
+
+const $tabBar: ViewStyle = {
+  backgroundColor: colors.background,
+  borderTopColor: colors.transparent,
+}
+
+const $tabBarItem: ViewStyle = {
+  paddingTop: spacing.md,
+}
+
+const $tabBarLabel: TextStyle = {
+  fontSize: 12,
+  fontFamily: typography.primary.medium,
+  lineHeight: 16,
+  flex: 1,
+}
+
+// @demo remove-file
+
+export interface NavigationProps
+  extends Partial<React.ComponentProps<typeof NavigationContainer>> {}
+
+export default AppNavigator

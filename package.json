@@ -41,6 +41,7 @@
     "date-fns": "^2.29.2",
     "expo": "^48.0.15",
     "expo-application": "~5.1.1",
+    "expo-camera": "~13.2.1",
     "expo-constants": "~14.2.1",
     "expo-device": "~5.2.1",
     "expo-file-system": "~15.2.1",
@@ -130,7 +131,6 @@
     "extends": [
       "plugin:@typescript-eslint/recommended",
       "plugin:react/recommended",
-      "plugin:react-native/all",
       "standard",
       "prettier"
     ],

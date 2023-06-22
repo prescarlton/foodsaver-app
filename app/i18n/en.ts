@@ -3,7 +3,7 @@ const en = {
     ok: "OK!",
     cancel: "Cancel",
     back: "Back",
-    logOut: "Log Out", // @demo remove-current-line
+    logOut: "Log Out",
   },
   welcomeScreen: {
     postscript:
@@ -26,7 +26,12 @@ const en = {
       button: "Let's try this again",
     },
   },
-  // @demo remove-block-start
+  tabNavigator: {
+    homeTab: "Home",
+    cameraTab: "Camera",
+  },
+  cameraScreen: {},
+
   errors: {
     invalidEmail: "Invalid email address.",
   },
@@ -119,7 +124,6 @@ const en = {
         "No favorites have been added yet. Tap the heart on an episode to add it to your favorites!",
     },
   },
-  // @demo remove-block-end
 }
 
 export default en

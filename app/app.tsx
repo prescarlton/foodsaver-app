@@ -14,14 +14,14 @@ import "./utils/ignoreWarnings"
 import { useFonts } from "expo-font"
 import React from "react"
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context"
-import * as Linking from "expo-linking"
 import { useInitialRootStore } from "./models"
-import { AppNavigator, useNavigationPersistence } from "./navigators"
+import { useNavigationPersistence } from "./navigators"
 import { ErrorBoundary } from "./screens/ErrorScreen/ErrorBoundary"
 import * as storage from "./utils/storage"
 import { customFontsToLoad } from "./theme"
 import { setupReactotron } from "./services/reactotron"
 import Config from "./config"
+import AppNavigator from "./navigators/AppNavigator"
 
 // Set up Reactotron, which is a free desktop app for inspecting and debugging
 // React Native apps. Learn more here: https://github.com/infinitered/reactotron
@@ -40,27 +40,6 @@ setupReactotron({
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
-// Web linking configuration
-const prefix = Linking.createURL("/")
-const config = {
-  screens: {
-    Login: {
-      path: "",
-    },
-    Welcome: "welcome",
-    Demo: {
-      screens: {
-        DemoShowroom: {
-          path: "showroom/:queryIndex?/:itemIndex?",
-        },
-        DemoDebug: "debug",
-        DemoPodcastList: "podcast",
-        DemoCommunity: "community",
-      },
-    },
-  },
-}
-
 interface AppProps {
   hideSplashScreen: () => Promise<void>
 }
@@ -70,11 +49,10 @@ interface AppProps {
  */
 function App(props: AppProps) {
   const { hideSplashScreen } = props
-  const {
-    initialNavigationState,
-    onNavigationStateChange,
-    isRestored: isNavigationStateRestored,
-  } = useNavigationPersistence(storage, NAVIGATION_PERSISTENCE_KEY)
+  const { isRestored: isNavigationStateRestored } = useNavigationPersistence(
+    storage,
+    NAVIGATION_PERSISTENCE_KEY,
+  )
 
   const [areFontsLoaded] = useFonts(customFontsToLoad)
 
@@ -96,20 +74,11 @@ function App(props: AppProps) {
   // You can replace with your own loading component if you wish.
   if (!rehydrated || !isNavigationStateRestored || !areFontsLoaded) return null
 
-  const linking = {
-    prefixes: [prefix],
-    config,
-  }
-
   // otherwise, we're ready to render the app
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ErrorBoundary catchErrors={Config.catchErrors}>
-        <AppNavigator
-          linking={linking}
-          initialState={initialNavigationState}
-          onStateChange={onNavigationStateChange}
-        />
+        <AppNavigator />
       </ErrorBoundary>
     </SafeAreaProvider>
   )
