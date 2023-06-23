@@ -22,6 +22,7 @@ import { customFontsToLoad } from "./theme"
 import { setupReactotron } from "./services/reactotron"
 import Config from "./config"
 import AppNavigator from "./navigators/AppNavigator"
+import { NativeBaseProvider } from "native-base"
 
 // Set up Reactotron, which is a free desktop app for inspecting and debugging
 // React Native apps. Learn more here: https://github.com/infinitered/reactotron
@@ -78,7 +79,9 @@ function App(props: AppProps) {
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ErrorBoundary catchErrors={Config.catchErrors}>
-        <AppNavigator />
+        <NativeBaseProvider>
+          <AppNavigator />
+        </NativeBaseProvider>
       </ErrorBoundary>
     </SafeAreaProvider>
   )
