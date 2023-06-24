@@ -5,8 +5,10 @@ import { spacing } from "../../theme"
 import RecipeCard from "./components/RecipeCard"
 import { fakeRecipes } from "./data/fakeRecipes"
 import { FlatList, View } from "native-base"
+import useClerkQuery from "app/hooks/api/useClerkQuery"
 
 export const RecipeListScreen = () => {
+  const { data: me } = useClerkQuery("http://localhost:5001/app/users/me")
   return (
     <Screen preset="fixed" contentContainerStyle={styles.container} safeAreaEdges={["top"]}>
       <Text preset="heading">Recipes</Text>

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Keyboard, Platform, TouchableWithoutFeedback } from "react-native"
-import { useSignUp } from "@clerk/clerk-expo"
+import { useAuth, useSignUp } from "@clerk/clerk-expo"
 import {
   Button,
   HStack,
@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import useSignup from "app/hooks/api/useSignup"
 import Feather from "@expo/vector-icons/Feather"
 import { useToast } from "react-native-toast-notifications"
+import * as SecureStore from "expo-secure-store"
 
 export default function SignUpScreen({ navigation }) {
   const { isLoaded, signUp, setActive } = useSignUp()
@@ -28,6 +29,7 @@ export default function SignUpScreen({ navigation }) {
   const { bottom, top } = useSafeAreaInsets()
   const signup = useSignup()
   const toast = useToast()
+  const { getToken } = useAuth()
   // start the sign up process.
   const onSignUpPress = async () => {
     if (!isLoaded) {
@@ -72,6 +74,9 @@ export default function SignUpScreen({ navigation }) {
       })
       // finally, sign the user in
       await setActive({ session: completeSignUp.createdSessionId })
+      console.log("after active")
+      const token = await getToken()
+      await SecureStore.setItemAsync("token", token)
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2))
       toast.show("Unable to sign up", { type: "danger", placement: "top" })

@@ -1,5 +1,4 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios"
-import * as SecureStore from "expo-secure-store"
 
 enum StatusCode {
   NotFound = 404,
@@ -36,12 +35,6 @@ instance.interceptors.response.use(
     return error
   },
 )
-instance.interceptors.request.use(async (req) => {
-  // throw the auth token on that jawn
-  const token = await SecureStore.getItemAsync("__clerk_client_jwt")
-  req.headers.Authorization = `Bearer ${token}`
-  return req
-})
 
 // Handle global app errors
 // We can handle generic app errors depending on the status code
