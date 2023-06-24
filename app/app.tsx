@@ -15,7 +15,7 @@ import { useFonts } from "expo-font"
 import React from "react"
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context"
 import { useInitialRootStore } from "./models"
-import { useNavigationPersistence } from "./navigators"
+import { navigationRef, useNavigationPersistence } from "./navigators"
 import { ErrorBoundary } from "./screens/ErrorScreen/ErrorBoundary"
 import * as storage from "./utils/storage"
 import { customFontsToLoad } from "./theme"
@@ -23,6 +23,11 @@ import { setupReactotron } from "./services/reactotron"
 import Config from "./config"
 import AppNavigator from "./navigators/AppNavigator"
 import { NativeBaseProvider } from "native-base"
+import { ClerkProvider, SignedIn, SignedOut } from "@clerk/clerk-expo"
+import tokenCache from "./utils/tokenCache"
+import SignedOutNavigator from "./navigators/SignedOutNavigator"
+import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native"
+import { useColorScheme } from "react-native"
 
 // Set up Reactotron, which is a free desktop app for inspecting and debugging
 // React Native apps. Learn more here: https://github.com/infinitered/reactotron
@@ -66,24 +71,30 @@ function App(props: AppProps) {
     // Note: (vanilla iOS) You might notice the splash-screen logo change size. This happens in debug/development mode. Try building the app for release.
     setTimeout(hideSplashScreen, 500)
   })
+  const colorScheme = useColorScheme()
 
-  // Before we show the app, we have to wait for our state to be ready.
-  // In the meantime, don't render anything. This will be the background
-  // color set in native by rootView's background color.
-  // In iOS: application:didFinishLaunchingWithOptions:
-  // In Android: https://stackoverflow.com/a/45838109/204044
-  // You can replace with your own loading component if you wish.
   if (!rehydrated || !isNavigationStateRestored || !areFontsLoaded) return null
 
-  // otherwise, we're ready to render the app
   return (
-    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <ErrorBoundary catchErrors={Config.catchErrors}>
-        <NativeBaseProvider>
-          <AppNavigator />
-        </NativeBaseProvider>
-      </ErrorBoundary>
-    </SafeAreaProvider>
+    <ClerkProvider publishableKey={Config.clerkPK} tokenCache={tokenCache}>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+        <ErrorBoundary catchErrors={Config.catchErrors}>
+          <NativeBaseProvider>
+            <NavigationContainer
+              ref={navigationRef}
+              theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <SignedIn>
+                <AppNavigator />
+              </SignedIn>
+              <SignedOut>
+                <SignedOutNavigator />
+              </SignedOut>
+            </NavigationContainer>
+          </NativeBaseProvider>
+        </ErrorBoundary>
+      </SafeAreaProvider>
+    </ClerkProvider>
   )
 }
 
