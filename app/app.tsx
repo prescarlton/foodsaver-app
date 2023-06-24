@@ -28,6 +28,8 @@ import tokenCache from "./utils/tokenCache"
 import SignedOutNavigator from "./navigators/SignedOutNavigator"
 import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native"
 import { useColorScheme } from "react-native"
+import { QueryClient, QueryClientProvider } from "react-query"
+import { ToastProvider } from "react-native-toast-notifications"
 
 // Set up Reactotron, which is a free desktop app for inspecting and debugging
 // React Native apps. Learn more here: https://github.com/infinitered/reactotron
@@ -72,29 +74,34 @@ function App(props: AppProps) {
     setTimeout(hideSplashScreen, 500)
   })
   const colorScheme = useColorScheme()
+  const queryClient = new QueryClient()
 
   if (!rehydrated || !isNavigationStateRestored || !areFontsLoaded) return null
 
   return (
-    <ClerkProvider publishableKey={Config.clerkPK} tokenCache={tokenCache}>
-      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+      <ToastProvider placement="top" offsetTop={60}>
         <ErrorBoundary catchErrors={Config.catchErrors}>
-          <NativeBaseProvider>
-            <NavigationContainer
-              ref={navigationRef}
-              theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-            >
-              <SignedIn>
-                <AppNavigator />
-              </SignedIn>
-              <SignedOut>
-                <SignedOutNavigator />
-              </SignedOut>
-            </NavigationContainer>
-          </NativeBaseProvider>
+          <ClerkProvider publishableKey={Config.clerkPK} tokenCache={tokenCache}>
+            <QueryClientProvider client={queryClient}>
+              <NativeBaseProvider>
+                <NavigationContainer
+                  ref={navigationRef}
+                  theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+                >
+                  <SignedIn>
+                    <AppNavigator />
+                  </SignedIn>
+                  <SignedOut>
+                    <SignedOutNavigator />
+                  </SignedOut>
+                </NavigationContainer>
+              </NativeBaseProvider>
+            </QueryClientProvider>
+          </ClerkProvider>
         </ErrorBoundary>
-      </SafeAreaProvider>
-    </ClerkProvider>
+      </ToastProvider>
+    </SafeAreaProvider>
   )
 }
 

@@ -1,14 +1,25 @@
-import React from "react"
+import React, { useState } from "react"
 import { Keyboard, Platform, TouchableWithoutFeedback } from "react-native"
 import { useSignIn } from "@clerk/clerk-expo"
-import { Button, HStack, Input, KeyboardAvoidingView, VStack, Text } from "native-base"
+import {
+  Button,
+  HStack,
+  Input,
+  KeyboardAvoidingView,
+  VStack,
+  Text,
+  Pressable,
+  Icon,
+} from "native-base"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import Feather from "@expo/vector-icons/Feather"
 
 export default function LoginScreen({ navigation }) {
   const { signIn, setActive, isLoaded } = useSignIn()
 
-  const [emailAddress, setEmailAddress] = React.useState("")
-  const [password, setPassword] = React.useState("")
+  const [emailAddress, setEmailAddress] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
   const { bottom, top } = useSafeAreaInsets()
 
@@ -32,6 +43,7 @@ export default function LoginScreen({ navigation }) {
   const handleSignupPress = () => {
     navigation.navigate("Signup")
   }
+  const togglePassword = () => setShowPassword((prev) => !prev)
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -56,6 +68,9 @@ export default function LoginScreen({ navigation }) {
               placeholder="Email"
               variant="filled"
               size="2xl"
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="email"
             />
             <Input
               value={password}
@@ -63,6 +78,19 @@ export default function LoginScreen({ navigation }) {
               placeholder="Password"
               variant="filled"
               size="2xl"
+              autoCapitalize="none"
+              autoComplete="password"
+              type={showPassword ? "text" : "password"}
+              InputRightElement={
+                <Pressable onPress={togglePassword}>
+                  <Icon
+                    as={<Feather name={showPassword ? "eye" : "eye-off"} />}
+                    size={5}
+                    mr="2"
+                    color="muted.400"
+                  />
+                </Pressable>
+              }
             />
             <Button onPress={handleLoginPress} width="full">
               Login
