@@ -8,4 +8,5 @@ export interface IRecipe {
   description: string
   photo: string
   ingredients: string[]
+  instructions: string[]
 }
