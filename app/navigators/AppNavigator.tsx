@@ -14,7 +14,7 @@ import { colors } from "app/theme"
 import { AnimatedTabBarNavigator } from "react-native-animated-nav-tab-bar"
 import FeatherIcons from "@expo/vector-icons/Feather"
 import { translate } from "app/i18n"
-import RecipeListStack from "./RecipeListStack"
+import RecipeListNavigator from "./RecipeListNavigator"
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
  * as well as what properties (if any) they might take when navigating to them.
@@ -62,7 +62,7 @@ const AppNavigator = observer(function AppStack() {
     >
       <Tab.Screen
         name="RecipeList"
-        component={RecipeListStack}
+        component={RecipeListNavigator}
         options={{
           tabBarLabel: translate("tabNavigator.recipeListTab"),
           tabBarIcon: ({ focused }) => (

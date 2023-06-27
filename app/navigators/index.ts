@@ -1,4 +1,4 @@
 export * from "./AppNavigator"
 export * from "./navigationUtilities"
-export * from "./RecipeListStack"
+export * from "./RecipeListNavigator"
 // export other navigators from here

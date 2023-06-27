@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import React from "react"
 import * as Screens from "app/screens"
 
-function StackNavigator() {
+function RecipeListNavigator() {
   const Stack = createNativeStackNavigator()
 
   return (
@@ -13,4 +13,4 @@ function StackNavigator() {
   )
 }
 
-export default StackNavigator
+export default RecipeListNavigator
