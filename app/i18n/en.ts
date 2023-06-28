@@ -31,6 +31,7 @@ const en = {
     cameraTab: "Camera",
     recipeListTab: "Recipes",
     profileTab: "Profile",
+    cameraRollTab: "Camera Roll",
   },
   cameraScreen: {},
 

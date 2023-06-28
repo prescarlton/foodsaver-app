@@ -89,6 +89,20 @@ const AppNavigator = observer(function AppStack() {
         }}
       />
       <Tab.Screen
+        name="Camera Roll"
+        component={Screens.CameraRollScreen}
+        options={{
+          tabBarLabel: translate("tabNavigator.cameraRollTab"),
+          tabBarIcon: ({ focused }) => (
+            <FeatherIcons
+              name="image"
+              color={focused ? colors.tint : colors.palette.neutral300}
+              size={30}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Profile"
         component={Screens.ProfileScreen}
         options={{
